@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tutorial.Models;
+using Tutorial.Data;
+using Tutorial.Models.Dto;
 
 namespace Tutorial.Controllers
 {
@@ -8,13 +9,25 @@ namespace Tutorial.Controllers
     public class VillaAPIController : ControllerBase
     {
         [HttpGet]
-        public IEnumerable<Villa> GetVillas()
+        public ActionResult<IEnumerable<VillaDTO>> GetVillas()
         {
-            return new List<Villa>
+            return Ok( VillaStore.VillaList);
+        }
+
+        [HttpGet("{id:int}")]
+        public ActionResult<VillaDTO> GetVilla(int id)
+        {
+            if (id == 0)
             {
-                new Villa{Id=1,Name="Pool View"},
-                new Villa{ Id = 2, Name = "Beach View View" }
-            };
+                return BadRequest();
+            }
+            var villa = VillaStore.VillaList.FirstOrDefault(u=>u.Id==id);
+            if (villa == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(villa);
         }
     }
 }
